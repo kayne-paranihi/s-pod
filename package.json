@@ -64,6 +64,7 @@
   "dependencies": {
     "@devacademy/eslint-config": "^1.8.0",
     "@redux-devtools/extension": "^3.2.3",
+    "dotenv": "^16.1.4",
     "express": "^4.17.2",
     "knex": "^2.3.0",
     "sqlite3": "^5.1.2",
