@@ -58,13 +58,36 @@ router.get('/callback', (req, res) => {
   const code = req.query.code?.toString()
   const codeVerifier = localStorage.getItem('code_verifier') as string
 
-  const  body  = new URLSearchParams({
-    grant_type: 'authorization_code',
-    code: code,
-    redirect_uri: 'http://localhost:3000/auth/callback',
-    client_id: clientId,
-    code_verifier: codeVerifier
-  })
+  // const  body  = new URLSearchParams({
+  //   grant_type: 'authorization_code',
+  //   code: code,
+  //   redirect_uri: 'http://localhost:3000/auth/callback',
+  //   client_id: clientId,
+  //   code_verifier: codeVerifier
+  // })
+  
+  const  authOptions  = {
+    url: 'https://accounts.spotify.com/api/token',
+    form: {
+      grant_type: 'authorization_code',
+      code: code,
+      redirect_uri: 'http://localhost:3000/auth/callback',
+      client_id: clientId,
+      code_verifier: codeVerifier
+    },
+    headers: {
+      'Authorization': 'Basic ' + (Buffer.from(clientId + ':' + clientSecret).toString('base64')),
+      'Content-Type' : 'application/x-www-form-urlencoded'
+    },
+    json: true
+  }
+
+  request.post(authOptions, ((e, response, body) {
+    if (!error & response.statusCode === 200) {
+      const access_token = body.access_token;
+      res.redirect('/')
+    } 
+  }))
   
 
 
