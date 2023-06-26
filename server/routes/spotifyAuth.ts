@@ -18,6 +18,18 @@ const generateRandomString = (length:number) => {
   return text;
 };
 
+
+async function generateCodeChallenge(codeVerifier: string) {
+  const data = new TextEncoder().encode(codeVerifier)
+  const digest = await window.crypto.subtle.digest('SHA-256', data)
+  return btoa(String.fromCharCode.apply(null, [...new Uint8Array(digest)]))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '')
+}
+
+
+
 router.get('/login', (req, res) => {
   const scope = "streaming \
                 user-read-email \
@@ -39,6 +51,21 @@ const  auth_query_parameters = new URLSearchParams(searchObj)
 res.redirect('https://accounts.spotify.com/authorize/?' + auth_query_parameters.toString());
 })
 
-router.get('/callback', (req, res) => {})
+// router.get('/callback', (req, res) => {
+//   const code = req.query.code
+
+//   const authOptions = {
+//     url: 'https://accounts.spotify.com/api/token',
+//     form: {
+//       code: code,
+//       redirect_uri: "http://localhost:3000/auth/callback",
+//       grant_type: 'authorization_code'
+//     },
+//     headers: {
+//       'Authorization': 'Basic ' +
+//     }
+//     }
+//   }
+// })
 
 export default router
