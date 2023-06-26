@@ -1,14 +1,15 @@
 import express from 'express'
+import request from 'superagent'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
-const spotify_client_id = process.env.SPOTIFY_CLIENT_ID as string
-const spotify_client_secret = process.env.SPOTIFY_CLIENT_SECRET
+const clientId = process.env.SPOTIFY_CLIENT_ID as string
+const clientSecret = process.env.SPOTIFY_CLIENT_SECRET
 const router = express.Router()
 
 router.use(express.json())
 
-const generateRandomString = (length:number) => {
+const genRandStr = (length:number) => {
   let text = '';
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
@@ -19,7 +20,7 @@ const generateRandomString = (length:number) => {
 };
 
 
-async function generateCodeChallenge(codeVerifier: string) {
+async function genCodeChallenge(codeVerifier: string) {
   const data = new TextEncoder().encode(codeVerifier)
   const digest = await window.crypto.subtle.digest('SHA-256', data)
   return btoa(String.fromCharCode.apply(null, [...new Uint8Array(digest)]))
@@ -31,41 +32,43 @@ async function generateCodeChallenge(codeVerifier: string) {
 
 
 router.get('/login', (req, res) => {
-  const scope = "streaming \
-                user-read-email \
-                user-read-private"
 
-const state = generateRandomString(16);
+  const  codeVerifier = genRandStr(128)
 
-const searchObj = {
-  response_type: "code",
-  client_id: spotify_client_id,
-  scope: scope,
-  redirect_uri: "https://localhost:3000/auth/callback",
-  state:state
-}
-
-
-const  auth_query_parameters = new URLSearchParams(searchObj)
-
-res.redirect('https://accounts.spotify.com/authorize/?' + auth_query_parameters.toString());
+  genCodeChallenge(codeVerifier)
+  .then(codeChallenge => {
+    const scope = "streaming user-read-email user-read-private"
+    const state = genRandStr(16)
+    localStorage.setItem('code_verifier', codeVerifier)
+    const args = new URLSearchParams({
+      response_type: "code",
+      client_id: clientId,
+      scope: scope,
+      redirect_uri: "https://localhost:3000/auth/callback",
+      state: state,
+      code_challenge_method: 'S256',
+      code_challenge: codeChallenge
+    })
+    res.redirect('https://accounts.spotify.com/authorize/?' + args.toString());
+  })
+  .catch(e => {console.error(`LOGIN ERR:${e}`)})
 })
 
-// router.get('/callback', (req, res) => {
-//   const code = req.query.code
+router.get('/callback', (req, res) => {
+  const code = req.query.code?.toString()
+  const codeVerifier = localStorage.getItem('code_verifier') as string
 
-//   const authOptions = {
-//     url: 'https://accounts.spotify.com/api/token',
-//     form: {
-//       code: code,
-//       redirect_uri: "http://localhost:3000/auth/callback",
-//       grant_type: 'authorization_code'
-//     },
-//     headers: {
-//       'Authorization': 'Basic ' +
-//     }
-//     }
-//   }
-// })
+  const  body  = new URLSearchParams({
+    grant_type: 'authorization_code',
+    code: code,
+    redirect_uri: 'http://localhost:3000/auth/callback',
+    client_id: clientId,
+    code_verifier: codeVerifier
+  })
+  
+
+
+
+})
 
 export default router
