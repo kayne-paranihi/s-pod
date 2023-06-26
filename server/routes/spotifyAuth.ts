@@ -20,19 +20,19 @@ const genRandStr = (length:number) => {
 };
 
 
-async function genCodeChallenge(codeVerifier: string) {
-  const data = new TextEncoder().encode(codeVerifier)
-  const digest = await window.crypto.subtle.digest('SHA-256', data)
-  return btoa(String.fromCharCode.apply(null, [...new Uint8Array(digest)]))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '')
-}
 
 
 
 router.get('/login', (req, res) => {
-
+  
+  async function genCodeChallenge(codeVerifier: string) {
+    const data = new TextEncoder().encode(codeVerifier)
+    const digest = await window.crypto.subtle.digest('SHA-256', data)
+    return btoa(String.fromCharCode.apply(null, [...new Uint8Array(digest)]))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '')
+  }
   const  codeVerifier = genRandStr(128)
 
   genCodeChallenge(codeVerifier)
@@ -44,7 +44,7 @@ router.get('/login', (req, res) => {
       response_type: "code",
       client_id: clientId,
       scope: scope,
-      redirect_uri: "https://localhost:3000/auth/callback",
+      redirect_uri: "http://localhost:5173/auth/callback",
       state: state,
       code_challenge_method: 'S256',
       code_challenge: codeChallenge
@@ -58,40 +58,37 @@ router.get('/callback', (req, res) => {
   const code = req.query.code?.toString()
   const codeVerifier = localStorage.getItem('code_verifier') as string
 
-  // const  body  = new URLSearchParams({
-  //   grant_type: 'authorization_code',
-  //   code: code,
-  //   redirect_uri: 'http://localhost:3000/auth/callback',
-  //   client_id: clientId,
-  //   code_verifier: codeVerifier
-  // })
-  
-  const  authOptions  = {
-    url: 'https://accounts.spotify.com/api/token',
-    form: {
-      grant_type: 'authorization_code',
-      code: code,
-      redirect_uri: 'http://localhost:3000/auth/callback',
-      client_id: clientId,
-      code_verifier: codeVerifier
-    },
-    headers: {
-      'Authorization': 'Basic ' + (Buffer.from(clientId + ':' + clientSecret).toString('base64')),
-      'Content-Type' : 'application/x-www-form-urlencoded'
-    },
-    json: true
-  }
+  async () => {
+  await request.post(
+    'https://accounts.spotify.com/api/token'
+  )
+  .set('Authorization', 'Basic ' + (Buffer.from(clientId + ':' + clientSecret).toString('base64')))
+  .set('Content-Type', 'application/x-www-form-urlencoded')
+  .send({
+    grant_type: 'authorization_code',
+    code: code,
+    redirect_uri: 'http://localhost:5173/auth/callback',
+    client_id: clientId,
+    code_verifier: codeVerifier
 
-  request.post(authOptions, ((e, response, body) {
-    if (!error & response.statusCode === 200) {
-      const access_token = body.access_token;
-      res.redirect('/')
-    } 
-  }))
-  
+  }).then(res => {
+    localStorage.setItem('access_token', res.body.access_token)
+   
+    
+  }).catch(e => {
+    console.error(`ERR WHILE REQUESTING TOKEN: ${e}`)
+  })
+}
 
+})
 
-
+router.get('/token', (req, res) => {
+  const access_token = localStorage.getItem('access_token')
+  res.json(
+    {
+      access_token: access_token
+    }
+)
 })
 
 export default router
