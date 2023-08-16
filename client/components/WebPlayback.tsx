@@ -81,7 +81,7 @@ function WebPlayback(props: Props) {
             <div className="now-playing__side">
               <div className="now-playing__name">{current_track?.name}</div>
               <div className="now-playing__artist">
-                {current_track?.artists[0].name}
+                {current_track?.artists.map((artist) => artist.name).join(', ')}
               </div>
               <div className="now-playing__album">
                 {current_track?.album.name}
