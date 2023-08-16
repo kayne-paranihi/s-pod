@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { transferPlayback } from '../apis/transferPlayback'
 
 interface Props {
   token: string
@@ -9,6 +10,7 @@ function WebPlayback(props: Props) {
   const [is_paused, setPaused] = useState<boolean>(false)
   const [is_active, setActive] = useState<boolean>(false)
   const [current_track, setTrack] = useState<Spotify.Track | null>(null)
+  const [playerId, setPlayerId] = useState<string | null>(null)
 
   useEffect(() => {
     const script = document.createElement('script')
@@ -29,11 +31,11 @@ function WebPlayback(props: Props) {
       setPlayer(player)
 
       player.addListener('ready', ({ device_id }) => {
-        console.log('Ready with Device ID', device_id)
+        setPlayerId(device_id)
       })
 
-      player.addListener('not_ready', ({ device_id }) => {
-        console.log('Device ID has gone offline', device_id)
+      player.addListener('not_ready', () => {
+        console.log('Device ID has gone offline')
       })
 
       player.addListener('player_state_changed', (state) => {
@@ -49,7 +51,7 @@ function WebPlayback(props: Props) {
           !state ? setActive(false) : setActive(true)
         })
       })
-
+      console.log(props.token)
       player.connect()
     }
   }, [props.token])
@@ -58,12 +60,12 @@ function WebPlayback(props: Props) {
     return (
       <>
         <div className="container">
-          <div className="main-wrapper">
-            <b>
-              {' '}
-              Instance not active. Transfer your playback using your Spotify app{' '}
-            </b>
-          </div>
+          <button
+            className="btn-spotify"
+            onClick={() => transferPlayback(props.token, playerId)}
+          >
+            Start
+          </button>
         </div>
       </>
     )

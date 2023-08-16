@@ -19,6 +19,7 @@ function generateRandomString(length: number) {
 
 const router = express.Router()
 let access_token = ''
+
 router.use(express.json())
 
 router.get('/auth/login', (_req, res) => {
