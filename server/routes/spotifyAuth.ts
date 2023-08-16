@@ -68,7 +68,8 @@ router.get('/auth/callback', async (req, res) => {
       })
 
     access_token = response.body.access_token
-    res.redirect('/')
+    // ! this redirect is only for correct redirecting during development - please change the redirect to just '/' in deployment
+    res.redirect('http://localhost:5173')
   } catch (error) {
     console.error(`ERR WHILE REQUESTING TOKEN: ${error}`)
   }
