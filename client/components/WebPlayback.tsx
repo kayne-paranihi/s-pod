@@ -83,6 +83,9 @@ function WebPlayback(props: Props) {
               <div className="now-playing__artist">
                 {current_track?.artists[0].name}
               </div>
+              <div className="now-playing__album">
+                {current_track?.album.name}
+              </div>
 
               <button
                 className="btn-spotify"
@@ -99,7 +102,7 @@ function WebPlayback(props: Props) {
                   player?.togglePlay()
                 }}
               >
-                {is_paused ? 'PLAY' : 'PAUSE'}
+                {is_paused ? '⏵' : '⏸'}
               </button>
 
               <button

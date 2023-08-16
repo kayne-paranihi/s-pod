@@ -1,3 +1,11 @@
+@font-face {
+  font-family: myriad-pro;
+  src: url(/public/SanFranciscoText-Regular.otf);
+}
+
+
+
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -9,9 +17,10 @@ html, body {
 }
 
 body {
-  background-color: #333;
-  color: #eee;
-  font-family: Helvetica, Arial;
+  background-color: #F5F5F5;
+  color: #121212;
+  font-family: helvetica;
+  font-weight: 600;
   font-size: 3vmin;
 }
 
@@ -71,11 +80,18 @@ body {
 
 .now-playing__name {
   font-size: 1.5em;
-  margin-bottom: 0.2em;
+  margin-bottom: 0.4em;
 }
 
 .now-playing__artist {
-  margin-bottom: 1em;
+  font-size: 1.5em;
+  margin-bottom: 0.4em;
+}
+
+
+.now-playing__album {
+  font-size: 1.5em;
+  margin-bottom: 0.4em;
 }
 
 .now-playing__status {
@@ -97,17 +113,17 @@ body {
 }
 
 .btn-spotify {
-  background-color:#44c767;
+  background-color:#282c34;
   border-radius:28px;
-  border:1px solid #18ab29;
+  border:1px solid #282c34;
   display:inline-block;
   cursor:pointer;
   color:#ffffff;
-  font-family:Arial;
+  font-family:helvetica;
   font-size:17px;
   padding:16px 31px;
   text-decoration:none;
-  text-shadow:0px 1px 0px #2f6627;
+  /* text-shadow:0px 1px 0px #2f6627; */
 }
 .btn-spotify:active {
   position:relative;
