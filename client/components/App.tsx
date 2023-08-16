@@ -1,12 +1,21 @@
+import { useState, useEffect } from 'react'
+import Login from './Login'
+import WebPlayback from './WebPlayback'
+
 function App() {
-  return (
-    <>
-      <header className="header">
-        <h1>My Collection</h1>
-      </header>
-      <section className="main">{/* add your code here */}</section>
-    </>
-  )
+  const [token, setToken] = useState('')
+
+  useEffect(() => {
+    async function getToken() {
+      const response = await fetch('/api/v1/auth/token')
+      const json = await response.json()
+      setToken(json.access_token)
+    }
+
+    getToken()
+  }, [])
+
+  return <>{token === '' ? <Login /> : <WebPlayback token={token} />}</>
 }
 
 export default App
