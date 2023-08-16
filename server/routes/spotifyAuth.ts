@@ -24,6 +24,9 @@ router.use(express.json())
 router.get('/auth/login', (_req, res) => {
   const scope = `streaming 
                user-read-email 
+               user-read-playback-state
+               user-modify-playback-state
+               user-read-currently-playing
                user-read-private`
 
   const state = generateRandomString(16)
