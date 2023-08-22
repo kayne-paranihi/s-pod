@@ -1,8 +1,8 @@
 {
-  "name": "my-fullstack-collection",
+  "name": "s-pod",
   "version": "0.1.0",
-  "description": "Build a fullstack collection app",
-  "repository": "https://https://github.com/dev-academy-challenges/my-fullstack-collection",
+  "description": "iPod style spotify web player ",
+  "repository": "https://https://github.com/kayne-paranihi/s-pod",
   "main": "server/index.ts",
   "scripts": {
     "build": "run-s build:client build:server",
@@ -19,7 +19,7 @@
   "keywords": [
     "fullstack"
   ],
-  "author": "Dev Academy Aotearoa",
+  "author": "Kayne Paranihi",
   "license": "ISC",
   "eslintConfig": {
     "extends": "@devacademy/eslint-config/react",
